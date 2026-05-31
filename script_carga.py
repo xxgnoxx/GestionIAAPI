@@ -34,7 +34,7 @@ endpoint_supabase_transaccion = 'https://amhwbjhaueiicxozdllx.supabase.co/rest/v
 endpoint_supabase_libro = 'https://amhwbjhaueiicxozdllx.supabase.co/rest/v1/libro'
 
 
-# Script para recibir datos con POST y enviarlos a la API de supabase; para datos a la tabla cuenta de data_copper
+# Script para recibir datos con POST y enviarlos a la API de supabase; para datos a la tabla cuenta de data_bronze
 # El endpoint es '/enviar-datos', el cual solo acepta POST
 @script.post("/enviar-datos")
 async def enviar_datos(request: Request):
@@ -46,6 +46,8 @@ async def enviar_datos(request: Request):
 
     if not payload:
         raise HTTPException(status_code=400, detail="El JSON está vacío")
+    
+    
 
     # Detección: detecta qué tipo de datos es según la estructura de datos para enviarlo a la tabla apropiada
     # Incluye prints para que la consola o el Docker muestre el tipo de tabla detectada, si detecta alguna
@@ -68,16 +70,15 @@ async def enviar_datos(request: Request):
     # Si no hay una tabla
     else:
         print("ERROR: El request no tiene un header 'Tabla' con la tabla correspondiente.")
-        esquema_seleccionado = 'none'
-    
+        endpoint_supabase = 'none'
     
     # Detección de headers: detecta si el Schema está presente, y el valor que corresponde
     # Esto permite enviar a un esquema específico con el header correspondiente
 
-    # Si el header Schema dice copper
-    if request.headers.get("Schema") == "copper":
-        esquema_seleccionado = "data_copper"
-        print("Estos datos se enviarán al esquema data_copper")
+    # Si el header Schema dice bronze
+    if request.headers.get("Schema") == "bronze":
+        esquema_seleccionado = "data_bronze"
+        print("Estos datos se enviarán al esquema data_bronze")
     # Si el header Schema dice silver
     elif request.headers.get("Schema") == "silver":
         esquema_seleccionado = "data_silver"
@@ -117,11 +118,16 @@ async def enviar_datos(request: Request):
             respuesta.raise_for_status()
         # Si hay un error HTTP, envía un mensaje a la consola y a la API con información y el código de respuesta
         except httpx.HTTPStatusError as eh:
-            print(f"ERROR {eh.response.status_code}: {str(eh)}")
+            try:
+                detalles_supabase = eh.response.json()
+            except Exception:
+                detalles_supabase = eh.response.text
+
+            print(f"ERROR {eh.response.status_code} DESDE SUPABASE: {detalles_supabase}")
             return {
-                "status": "ERROR: No se logró una conexión a la API.",
-                "detalles_api": f"Código: {eh.response.status_code}",
-                "error": str(eh)
+                "status": "ERROR: Supabase rechazó la solicitud.",
+                "codigo_http": eh.response.status_code,
+                "detalle_supabase": detalles_supabase
             }
         # Si hay un error de otro tipo, envía un mensaje a la consola y la API con la información del error
         except Exception as e:
