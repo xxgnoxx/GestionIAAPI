@@ -50,25 +50,25 @@ async def enviar_datos(request: Request):
     # Detección: detecta qué tipo de datos es según la estructura de datos para enviarlo a la tabla apropiada
     # Incluye prints para que la consola o el Docker muestre el tipo de tabla detectada, si detecta alguna
     
-    # Tabla "cuenta"
-    if "idcuenta" and "moneda" and "saldo" and "estado" in payload:
+    # Detección de headers: detecta si el Schema está presente, y el valor que corresponde
+    # Esto permite enviar a un esquema específico con el header correspondiente
+
+    # Si el header Table dice cuenta
+    if request.headers.get("Table") == "cuenta":
         endpoint_supabase = endpoint_supabase_cuenta
-        print("Datos detectados como 'cuenta'")
-    # Tabla "transaccion"
-    elif "idtransaccion" and "idcuentaorigen" and "idcuentadestino" and "monto" and "fecha" and "estadotransaccion" in payload:
+        print("Estos datos se enviarán a la tabla cuenta")
+    # Si el header Table dice transaccion
+    elif request.headers.get("Table") == "transaccion":
         endpoint_supabase = endpoint_supabase_transaccion
-        print("Datos detectados como 'transaccion'")
-    # Tabla "libro"
-    elif "idlibro" and "idtransaccion" and "saldo" and "monto" and "fechalibro" in payload:
+        print("Estos datos se enviarán a la tabla transaccion")
+    # Si el header Table dice libro
+    elif request.headers.get("Table") == "libro":
         endpoint_supabase = endpoint_supabase_libro
-        print("Datos detectados como 'libro'")
-    # Si no tiene ninguno de los conjuntos de datos posibles, se rechaza
+        print("Estos datos se enviarán a la tabla libro")
+    # Si no hay una tabla
     else:
-        print("ERROR: Los datos no corresponden a ninguna tabla")
-        raise HTTPException(
-            status_code=422, 
-            detail="Estos datos no pertenecen a una tabla válida, ya que no contiene ningún tipo de ID válida."
-        )
+        print("ERROR: El request no tiene un header 'Tabla' con la tabla correspondiente.")
+        esquema_seleccionado = 'none'
     
     
     # Detección de headers: detecta si el Schema está presente, y el valor que corresponde
@@ -105,7 +105,8 @@ async def enviar_datos(request: Request):
         headers_supabase = {
             "apikey": os.getenv("PASSWORD_SUPABASE"),  # Variable de entorno; contraseña en .env
             "Content-Type": "application/json",
-            "Content-Profile": esquema_seleccionado
+            "Content-Profile": esquema_seleccionado,
+            "Prefer": "return=minimal"
         }
 
         # Envía los datos, usando headers_supabase para asegurar que se conecte correctamente
