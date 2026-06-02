@@ -26,9 +26,9 @@ class DatosLibro(BaseModel):
     fechalibro: date
 
 # La URL a la API de destino; esta es la API de Supabase
-endpoint_supabase_cuenta = 'https://amhwbjhaueiicxozdllx.supabase.co/rest/v1/cuenta'
-endpoint_supabase_transaccion = 'https://amhwbjhaueiicxozdllx.supabase.co/rest/v1/transaccion'
-endpoint_supabase_libro = 'https://amhwbjhaueiicxozdllx.supabase.co/rest/v1/libro'
+endpoint_supabase_cuenta = os.getenv("SUPABASE_API_CUENTA")
+endpoint_supabase_transaccion = os.getenv("SUPABASE_API_TRANSACCION")
+endpoint_supabase_libro = os.getenv("SUPABASE_API_LIBRO")
 
 
 # Script para recibir datos con POST y enviarlos a la API de supabase; para datos a la tabla cuenta de data_bronze
