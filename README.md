@@ -1,5 +1,5 @@
 # GestionIAAPI 
-Repositorio que contiene la API de carga de datos, conectándose a la API de Supabase. La API está subida a Render utilizando este repositorio.
+Repositorio que contiene la API de carga de datos, conectándose a la API de Supabase. La API está subida a Render utilizando este repositorio, accesible desde "https://gestioniaapi.onrender.com/"  
 
 # Estructura  
 ├──requirements.txt = Requerimientos del contenedor  
