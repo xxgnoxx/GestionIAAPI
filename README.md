@@ -12,7 +12,7 @@ Repositorio que contiene la API de carga de datos, conectándose a la API de Sup
 1. Clonar el repositorio (git clone https://github.com/xxgnoxx/GestionIAAPI)   
 2. Asegurar que Docker Desktop esté instalado y ejecutado  
 4. Instalar el contenedor usando 'docker build -t api-carga .'
-5. Ejecutar el contenedor usando 'docker run --rm api-carga'  
+5. Ejecutar el contenedor usando 'docker run -d -p 8000:8000 --rm api-carga'  
 
 # Desinstalación  
 1. Ejecutar 'docker-compose down' en la carpeta raíz  
