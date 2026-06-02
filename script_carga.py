@@ -8,13 +8,11 @@ script = FastAPI()
 
 # Crea la estructura en la que se reciben los datos; en este caso, ajustada a la tabla cuenta
 class DatosCuenta(BaseModel):
-    idcuenta: int
     moneda: str
     saldo: float
     estado: bool
 
 class DatosTransaccion(BaseModel):
-    idtransaccion: int
     idcuentaorigen: int
     idcuentadestino: int
     monto: float
@@ -22,7 +20,6 @@ class DatosTransaccion(BaseModel):
     estadotransaccion: bool
 
 class DatosLibro(BaseModel):
-    idlibro: int
     idtransaccion: int
     saldo: float
     monto: float
