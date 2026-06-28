@@ -4,6 +4,7 @@ import httpx
 import os
 from datetime import date
 from datetime import datetime
+import psutil
 
 script = FastAPI()
 
@@ -59,7 +60,13 @@ async def enviar_datos(request: Request):
     # Esto permite enviar a un esquema específico con el header correspondiente
 
     timestampheaders = datetime.now().timestamp()
-    print(f'Lectura de headers iniciada: {datetime.fromtimestamp(timestampheaders)}')  
+    print(f'Lectura de headers iniciada: {datetime.fromtimestamp(timestampheaders)}') 
+    
+    ### CHECKPOINT DE CONSUMO DE CPU Y RAM
+    print(f'USO DE CPU DEL SISTEMA: {psutil.cpu_percent(interval=None)}%')
+    ram_info = psutil.virtual_memory()
+    print(f"USO DE RAM DEL SISTEMA: {ram_info.used / (1024**3):.2f}/{ram_info.total / (1024**3):.2f} GB") 
+
     # Si el header Table dice cuenta
     if request.headers.get("Table") == "cuenta":
         endpoint_supabase = endpoint_supabase_cuenta
@@ -106,6 +113,12 @@ async def enviar_datos(request: Request):
     # Envío de información a la API de Supabase
     timestamppost = datetime.now().timestamp()
     print(f'Envío de datos iniciado: {datetime.fromtimestamp(timestamppost)}')
+
+    ### CHECKPOINT DE CONSUMO DE CPU Y RAM
+    print(f'USO DE CPU DEL SISTEMA: {psutil.cpu_percent(interval=None)}%')
+    ram_info = psutil.virtual_memory()
+    print(f"USO DE RAM DEL SISTEMA: {ram_info.used / (1024**3):.2f}/{ram_info.total / (1024**3):.2f} GB") 
+
     async with httpx.AsyncClient() as client:
 
         # Headers: 
@@ -133,6 +146,14 @@ async def enviar_datos(request: Request):
                 detalles_supabase = eh.response.text
 
             print(f"ERROR {eh.response.status_code} DESDE SUPABASE: {detalles_supabase}")
+            timestampend = datetime.now().timestamp()
+            print(f'Tiempo de fin API: {datetime.fromtimestamp(timestampend)}')
+
+            ### CHECKPOINT DE CONSUMO DE CPU Y RAM
+            print(f'USO DE CPU DEL SISTEMA: {psutil.cpu_percent(interval=None)}%')
+            ram_info = psutil.virtual_memory()
+            print(f"USO DE RAM DEL SISTEMA: {ram_info.used / (1024**3):.2f}/{ram_info.total / (1024**3):.2f} GB") 
+
             return {
                 "status": "ERROR: Supabase rechazó la solicitud.",
                 "codigo_http": eh.response.status_code,
@@ -141,6 +162,14 @@ async def enviar_datos(request: Request):
         # Si hay un error de otro tipo, envía un mensaje a la consola y la API con la información del error
         except Exception as e:
             print(f"ERROR: {str(e)}")
+            timestampend = datetime.now().timestamp()
+            print(f'Tiempo de fin API: {datetime.fromtimestamp(timestampend)}')
+
+            ### CHECKPOINT DE CONSUMO DE CPU Y RAM
+            print(f'USO DE CPU DEL SISTEMA: {psutil.cpu_percent(interval=None)}%')
+            ram_info = psutil.virtual_memory()
+            print(f"USO DE RAM DEL SISTEMA: {ram_info.used / (1024**3):.2f}/{ram_info.total / (1024**3):.2f} GB") 
+
             return {
                 "status": "Hubo un error desconocido.",
                 "error": str(e)
@@ -148,4 +177,10 @@ async def enviar_datos(request: Request):
     print("Los datos fueron enviados con éxito")
     timestampend = datetime.now().timestamp()
     print(f'Tiempo de fin API: {datetime.fromtimestamp(timestampend)}')
+
+    ### CHECKPOINT DE CONSUMO DE CPU Y RAM
+    print(f'USO DE CPU DEL SISTEMA: {psutil.cpu_percent(interval=None)}%')
+    ram_info = psutil.virtual_memory()
+    print(f"USO DE RAM DEL SISTEMA: {ram_info.used / (1024**3):.2f}/{ram_info.total / (1024**3):.2f} GB") 
     return {"status": "Los datos fueron enviados correctamente."}
+    
