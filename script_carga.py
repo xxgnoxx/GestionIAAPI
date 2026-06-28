@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import httpx
 import os
 from datetime import date
+from datetime import datetime
 
 script = FastAPI()
 
@@ -30,6 +31,10 @@ endpoint_supabase_cuenta = os.getenv("SUPABASE_API_CUENTA")
 endpoint_supabase_transaccion = os.getenv("SUPABASE_API_TRANSACCION")
 endpoint_supabase_libro = os.getenv("SUPABASE_API_LIBRO")
 
+# Timestamp para marcar el tiempo de inicio
+timestampstart = datetime.now().timestamp()
+print(f'Tiempo de inicio API: {datetime.fromtimestamp(timestampstart)}')
+
 
 # Script para recibir datos con POST y enviarlos a la API de supabase; para datos a la tabla cuenta de data_bronze
 # El endpoint es '/enviar-datos', el cual solo acepta POST
@@ -52,6 +57,8 @@ async def enviar_datos(request: Request):
     # Detección de headers: detecta si el Schema está presente, y el valor que corresponde
     # Esto permite enviar a un esquema específico con el header correspondiente
 
+    timestampheaders = datetime.now().timestamp()
+    print(f'Lectura de headers iniciada: {datetime.fromtimestamp(timestampheaders)}')  
     # Si el header Table dice cuenta
     if request.headers.get("Table") == "cuenta":
         endpoint_supabase = endpoint_supabase_cuenta
@@ -92,8 +99,12 @@ async def enviar_datos(request: Request):
     else:
         print("ERROR: El request no tiene un header 'Schema' con el esquema correspondiente.")
         esquema_seleccionado = 'none'
+    timestampheadersend = datetime.now().timestamp()
+    print(f'Lectura de headers terminada: {datetime.fromtimestamp(timestampheadersend)}')
 
     # Envío de información a la API de Supabase
+    timestamppost = datetime.now().timestamp()
+    print(f'Envío de datos iniciado: {datetime.fromtimestamp(timestamppost)}')
     async with httpx.AsyncClient() as client:
 
         # Headers: 
@@ -135,3 +146,5 @@ async def enviar_datos(request: Request):
             }
     print("Los datos fueron enviados con éxito")
     return {"status": "Los datos fueron enviados correctamente."}
+timestampend = datetime.now().timestamp()
+print(f'Tiempo de fin API: {datetime.fromtimestamp(timestampend)}')
