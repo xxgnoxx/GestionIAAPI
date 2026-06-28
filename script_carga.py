@@ -51,8 +51,7 @@ async def enviar_datos(request: Request):
         raise HTTPException(status_code=400, detail="El JSON está vacío")
     
     llaveapi = request.headers.get("apikey")
-    print(f'Key: {llaveapi}') # DEBUG
-    
+
     # Detección: detecta qué tipo de datos es según la estructura de datos para enviarlo a la tabla apropiada
     # Incluye prints para que la consola o el Docker muestre el tipo de tabla detectada, si detecta alguna
     
