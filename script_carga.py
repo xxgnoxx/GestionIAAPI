@@ -39,6 +39,7 @@ async def enviar_datos(request: Request):
     # Timestamp para marcar el tiempo de inicio
     timestampstart = datetime.now().timestamp()
     print(f'Tiempo de inicio API: {datetime.fromtimestamp(timestampstart)}')
+
     
     # Revisa el JSON para ver el tipo de contenido, si es válido, y en caso de que sea válido, verificar el tipo de tabla
     try:
@@ -49,8 +50,9 @@ async def enviar_datos(request: Request):
     if not payload:
         raise HTTPException(status_code=400, detail="El JSON está vacío")
     
+    llaveapi = request.headers.get("apikey")
+    print(f'Key: {llaveapi}') # DEBUG
     
-
     # Detección: detecta qué tipo de datos es según la estructura de datos para enviarlo a la tabla apropiada
     # Incluye prints para que la consola o el Docker muestre el tipo de tabla detectada, si detecta alguna
     
@@ -112,7 +114,7 @@ async def enviar_datos(request: Request):
         # Content-Type para indicar que es un json
         # Content-Profile para indicar el esquema al que se va a enviar
         headers_supabase = {
-            "apikey": request.headers.get("apikey"),  # Variable de entorno; contraseña debe incluirse
+            "apikey": llaveapi,  # Recibida de los scripts, los cuales deberían tenerla como variable de entorno
             "Content-Type": "application/json",
             "Content-Profile": esquema_seleccionado,
             "Prefer": "return=minimal"
