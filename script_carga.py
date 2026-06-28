@@ -112,7 +112,7 @@ async def enviar_datos(request: Request):
         # Content-Type para indicar que es un json
         # Content-Profile para indicar el esquema al que se va a enviar
         headers_supabase = {
-            "apikey": os.getenv("PASSWORD_SUPABASE"),  # Variable de entorno; contraseña en .env
+            "apikey": request.headers.get("apikey"),  # Variable de entorno; contraseña debe incluirse
             "Content-Type": "application/json",
             "Content-Profile": esquema_seleccionado,
             "Prefer": "return=minimal"
