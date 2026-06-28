@@ -31,15 +31,15 @@ endpoint_supabase_cuenta = os.getenv("SUPABASE_API_CUENTA")
 endpoint_supabase_transaccion = os.getenv("SUPABASE_API_TRANSACCION")
 endpoint_supabase_libro = os.getenv("SUPABASE_API_LIBRO")
 
-# Timestamp para marcar el tiempo de inicio
-timestampstart = datetime.now().timestamp()
-print(f'Tiempo de inicio API: {datetime.fromtimestamp(timestampstart)}')
-
 
 # Script para recibir datos con POST y enviarlos a la API de supabase; para datos a la tabla cuenta de data_bronze
 # El endpoint es '/enviar-datos', el cual solo acepta POST
 @script.post("/enviar-datos")
 async def enviar_datos(request: Request):
+    # Timestamp para marcar el tiempo de inicio
+    timestampstart = datetime.now().timestamp()
+    print(f'Tiempo de inicio API: {datetime.fromtimestamp(timestampstart)}')
+    
     # Revisa el JSON para ver el tipo de contenido, si es válido, y en caso de que sea válido, verificar el tipo de tabla
     try:
         payload = await request.json()
@@ -145,6 +145,6 @@ async def enviar_datos(request: Request):
                 "error": str(e)
             }
     print("Los datos fueron enviados con éxito")
+    timestampend = datetime.now().timestamp()
+    print(f'Tiempo de fin API: {datetime.fromtimestamp(timestampend)}')
     return {"status": "Los datos fueron enviados correctamente."}
-timestampend = datetime.now().timestamp()
-print(f'Tiempo de fin API: {datetime.fromtimestamp(timestampend)}')
