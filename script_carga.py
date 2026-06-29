@@ -32,6 +32,7 @@ endpoint_supabase_cuenta = os.getenv("SUPABASE_API_CUENTA")
 endpoint_supabase_transaccion = os.getenv("SUPABASE_API_TRANSACCION")
 endpoint_supabase_libro = os.getenv("SUPABASE_API_LIBRO")
 
+psutil.cpu_percent(interval=None) # Inicio de consumo de CPU; siempre empieza en 0, por lo que se inicia sin print para medir el consumo luego
 
 # Script para recibir datos con POST y enviarlos a la API de supabase; para datos a la tabla cuenta de data_bronze
 # El endpoint es '/enviar-datos', el cual solo acepta POST
